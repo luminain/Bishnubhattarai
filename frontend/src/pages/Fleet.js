@@ -9,7 +9,7 @@ const INTERIOR = [
   { icon: Wifi, label: "In-car Wi-Fi", desc: "5G hotspot with multiple-device support." },
   { icon: BatteryCharging, label: "Fast charging", desc: "Wireless + USB-C at every seat." },
   { icon: Snowflake, label: "Climate zones", desc: "Per-row temperature control." },
-  { icon: Music4, label: "Studio-grade audio", desc: "Bose Panaray (CT6) / 36-speaker Cadillac Audio (Escalade)." },
+  { icon: Music4, label: "AKG Studio audio", desc: "14-speaker AKG Studio reference sound with active noise cancellation." },
   { icon: Shield, label: "Privacy glass", desc: "Limo-grade tint and optional partition." },
 ];
 
@@ -22,10 +22,11 @@ export default function Fleet() {
           <div className="max-w-2xl">
             <div className="lux-kicker">The Fleet</div>
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl mt-3 text-[#E7EBF2]">
-              Two vehicles. <span className="italic text-[#B08D57]">Both flagships.</span>
+              One Cadillac XT6. <span className="italic text-[#B08D57]">Two trims.</span>
             </h1>
             <p className="mt-3 text-[#C9D0DB]">
-              Detailed daily. Maintained to factory spec. Every cabin is prepared as if it's our first ride.
+              The 2024 Cadillac XT6 in stealth Stellar Black — three rows, Super Cruise hands-free,
+              AKG Studio reference audio. Detailed daily. Maintained to factory spec.
             </p>
           </div>
         </div>

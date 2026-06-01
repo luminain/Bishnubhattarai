@@ -19,7 +19,7 @@ export const Footer = () => {
           </div>
           <p className="mt-5 text-sm text-[#C9D0DB] leading-relaxed max-w-sm">
             Discreet, punctual, impeccably maintained luxury car service across
-            the San Francisco Bay Area. Cadillac Escalade & CT6 fleet.
+            the San Francisco Bay Area. Blacked-out Cadillac XT6 fleet.
           </p>
           <div className="mt-5 flex items-center gap-2 text-[#9AA3B2] text-sm">
             <MapPin size={14} className="text-[#B08D57]" />

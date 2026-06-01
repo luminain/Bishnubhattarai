@@ -20,7 +20,7 @@ const TESTIMONIALS = [
     title: "Executive Producer, Bay Area",
   },
   {
-    quote: "The Escalade interior was as good as the Lufthansa First lounge. High praise.",
+    quote: "The XT6 cabin was as quiet as the Lufthansa First lounge. High praise.",
     name: "R. Achebe",
     title: "Frequent flyer — SFO",
   },

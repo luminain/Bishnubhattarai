@@ -222,7 +222,7 @@ class Customer(BaseModel):
 
 class BookingCreate(BaseModel):
     service_type: str
-    vehicle: str = "Cadillac Escalade"
+    vehicle: str = "Cadillac XT6"
     pickup: Location
     dropoff: Optional[Location] = None
     pickup_time: str  # ISO

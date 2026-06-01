@@ -11,13 +11,13 @@ import { Concierge } from "@/lib/api";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* ---------- Build a stylized luxury SUV imperatively ---------- */
+/* ---------- Build a stylized 2024 Cadillac XT6 (black luxury crossover) ---------- */
 const buildLuxurySUV = () => {
   const car = new THREE.Group();
-  const bodyColor = 0x0a0c10;
-  const chromeColor = 0xb5bac5;
-  const glassColor = 0x0c1218;
-  const bronze = 0xb08d57;
+  const bodyColor = 0x06070a;       // Cadillac "Stellar Black Metallic"
+  const chromeColor = 0xc6ccd6;     // bright chrome trim
+  const glassColor = 0x0a0f15;
+  const bronze = 0xb08d57;          // bronze grille accent
 
   const physicalMat = (color, extras = {}) =>
     new THREE.MeshPhysicalMaterial({
@@ -37,74 +37,126 @@ const buildLuxurySUV = () => {
     return m;
   };
 
-  // Chassis
-  addMesh(new THREE.BoxGeometry(4.2, 0.4, 1.7), stdMat(0x0f1216), [0, 0.25, 0]);
-  // Main body
-  addMesh(new THREE.BoxGeometry(4.0, 0.85, 1.65), physicalMat(bodyColor), [0, 0.75, 0]);
-  // Greenhouse
-  addMesh(new THREE.BoxGeometry(2.8, 0.55, 1.5), physicalMat(bodyColor), [-0.05, 1.32, 0]);
-  // Front slope
-  addMesh(new THREE.BoxGeometry(0.55, 0.45, 1.5), physicalMat(bodyColor), [1.4, 1.18, 0], [0, 0, -0.42]);
-  // Rear slope
-  addMesh(new THREE.BoxGeometry(0.5, 0.45, 1.5), physicalMat(bodyColor), [-1.5, 1.18, 0], [0, 0, 0.32]);
-  // Windshield
+  // ---- XT6 proportions: slightly shorter & lower than Escalade, crossover stance
+  // Wheelbase ~ 4.0, ride height lower, sleeker greenhouse
+  // Chassis / lower skirt
+  addMesh(new THREE.BoxGeometry(4.1, 0.32, 1.66), stdMat(0x0f1216), [0, 0.22, 0]);
+  // Main body (lower than Escalade)
+  addMesh(new THREE.BoxGeometry(3.95, 0.7, 1.64), physicalMat(bodyColor), [0, 0.65, 0]);
+  // Greenhouse — XT6 has a more sloped, sleeker roofline
+  addMesh(new THREE.BoxGeometry(2.55, 0.45, 1.46), physicalMat(bodyColor), [-0.1, 1.13, 0]);
+  // Front A-pillar slope (more raked than Escalade)
+  addMesh(new THREE.BoxGeometry(0.65, 0.4, 1.46), physicalMat(bodyColor), [1.3, 1.0, 0], [0, 0, -0.55]);
+  // Rear D-pillar (slight slope back)
+  addMesh(new THREE.BoxGeometry(0.55, 0.4, 1.46), physicalMat(bodyColor), [-1.45, 1.0, 0], [0, 0, 0.42]);
+
+  // Windshield (steeply raked)
   addMesh(
-    new THREE.BoxGeometry(0.55, 0.5, 1.42),
+    new THREE.BoxGeometry(0.6, 0.46, 1.4),
     new THREE.MeshPhysicalMaterial({ color: glassColor, metalness: 0.4, roughness: 0.05, transmission: 0.55, thickness: 0.4, envMapIntensity: 1.8 }),
-    [1.15, 1.25, 0], [0, 0, -0.44]
+    [1.05, 1.08, 0], [0, 0, -0.55]
   );
-  // Side windows
+  // Side glass panels (3-row windows)
   const sideGlassMat = new THREE.MeshPhysicalMaterial({ color: glassColor, metalness: 0.4, roughness: 0.05, transmission: 0.4, envMapIntensity: 1.6 });
-  addMesh(new THREE.BoxGeometry(2.6, 0.5, 0.02), sideGlassMat, [-0.05, 1.32, 0.77]);
-  addMesh(new THREE.BoxGeometry(2.6, 0.5, 0.02), sideGlassMat, [-0.05, 1.32, -0.77]);
-  // Rear glass
+  addMesh(new THREE.BoxGeometry(2.45, 0.4, 0.02), sideGlassMat, [-0.1, 1.15, 0.76]);
+  addMesh(new THREE.BoxGeometry(2.45, 0.4, 0.02), sideGlassMat, [-0.1, 1.15, -0.76]);
+  // Rear glass (steeper than Escalade)
   addMesh(
-    new THREE.BoxGeometry(0.5, 0.5, 1.42),
+    new THREE.BoxGeometry(0.55, 0.45, 1.4),
     new THREE.MeshPhysicalMaterial({ color: glassColor, metalness: 0.4, roughness: 0.05, transmission: 0.45, envMapIntensity: 1.8 }),
-    [-1.32, 1.25, 0], [0, 0, 0.35]
+    [-1.25, 1.08, 0], [0, 0, 0.45]
   );
-  // Front grille (bronze accent)
+
+  // ---- XT6 signature front: large vertical chrome grille with bronze accent
+  // Main grille shell (chrome surround)
   addMesh(
-    new THREE.BoxGeometry(0.04, 0.45, 1.2),
-    new THREE.MeshStandardMaterial({ color: bronze, metalness: 1, roughness: 0.18, emissive: bronze, emissiveIntensity: 0.06 }),
-    [2.02, 0.7, 0]
+    new THREE.BoxGeometry(0.04, 0.5, 1.1),
+    new THREE.MeshStandardMaterial({ color: chromeColor, metalness: 1, roughness: 0.12 }),
+    [2.0, 0.65, 0]
   );
+  // Inner grille (bronze brand accent)
+  addMesh(
+    new THREE.BoxGeometry(0.05, 0.36, 0.95),
+    new THREE.MeshStandardMaterial({ color: bronze, metalness: 1, roughness: 0.18, emissive: bronze, emissiveIntensity: 0.06 }),
+    [2.01, 0.65, 0]
+  );
+  // Vertical grille slats (8 thin chrome ribs)
+  const slatMat = new THREE.MeshStandardMaterial({ color: 0x222730, metalness: 0.9, roughness: 0.3 });
+  for (let i = 0; i < 8; i++) {
+    const z = -0.42 + i * 0.12;
+    addMesh(new THREE.BoxGeometry(0.02, 0.32, 0.025), slatMat, [2.03, 0.65, z]);
+  }
+  // Cadillac crest plaque
+  addMesh(
+    new THREE.BoxGeometry(0.05, 0.12, 0.16),
+    new THREE.MeshStandardMaterial({ color: chromeColor, metalness: 1, roughness: 0.1 }),
+    [2.04, 0.95, 0]
+  );
+
   // Bumpers
   const chromeMat = new THREE.MeshStandardMaterial({ color: chromeColor, metalness: 1, roughness: 0.18 });
-  addMesh(new THREE.BoxGeometry(0.06, 0.2, 1.55), chromeMat, [2.05, 0.4, 0]);
-  addMesh(new THREE.BoxGeometry(0.06, 0.2, 1.55), chromeMat, [-2.05, 0.4, 0]);
-  // Headlights
-  const headMat = new THREE.MeshStandardMaterial({ color: 0xfff6d6, emissive: 0xffe7a8, emissiveIntensity: 1.1 });
-  addMesh(new THREE.BoxGeometry(0.04, 0.18, 0.4), headMat, [2.03, 0.88, 0.55]);
-  addMesh(new THREE.BoxGeometry(0.04, 0.18, 0.4), headMat, [2.03, 0.88, -0.55]);
-  // Tail lights
-  const tailMat = new THREE.MeshStandardMaterial({ color: 0x5a0a0a, emissive: 0xe03030, emissiveIntensity: 0.45 });
-  addMesh(new THREE.BoxGeometry(0.04, 0.18, 0.4), tailMat, [-2.03, 0.88, 0.55]);
-  addMesh(new THREE.BoxGeometry(0.04, 0.18, 0.4), tailMat, [-2.03, 0.88, -0.55]);
-  // Side chrome strips
-  addMesh(new THREE.BoxGeometry(3.9, 0.04, 0.02), chromeMat, [0, 0.55, 0.82]);
-  addMesh(new THREE.BoxGeometry(3.9, 0.04, 0.02), chromeMat, [0, 0.55, -0.82]);
+  addMesh(new THREE.BoxGeometry(0.06, 0.18, 1.55), chromeMat, [2.04, 0.32, 0]);
+  addMesh(new THREE.BoxGeometry(0.06, 0.18, 1.55), chromeMat, [-2.04, 0.32, 0]);
 
-  // Wheels
+  // ---- XT6 signature vertical LED headlights (slim, tall)
+  const headMat = new THREE.MeshStandardMaterial({ color: 0xfff6d6, emissive: 0xffe7a8, emissiveIntensity: 1.3 });
+  // Upper horizontal lamp
+  addMesh(new THREE.BoxGeometry(0.04, 0.1, 0.32), headMat, [2.02, 0.92, 0.55]);
+  addMesh(new THREE.BoxGeometry(0.04, 0.1, 0.32), headMat, [2.02, 0.92, -0.55]);
+  // Vertical signature DRL strip (XT6 hallmark)
+  addMesh(new THREE.BoxGeometry(0.04, 0.45, 0.05), headMat, [2.02, 0.65, 0.66]);
+  addMesh(new THREE.BoxGeometry(0.04, 0.45, 0.05), headMat, [2.02, 0.65, -0.66]);
+
+  // ---- Vertical LED tail lights (XT6 signature)
+  const tailMat = new THREE.MeshStandardMaterial({ color: 0x5a0a0a, emissive: 0xe03030, emissiveIntensity: 0.55 });
+  addMesh(new THREE.BoxGeometry(0.04, 0.55, 0.06), tailMat, [-2.02, 0.7, 0.7]);
+  addMesh(new THREE.BoxGeometry(0.04, 0.55, 0.06), tailMat, [-2.02, 0.7, -0.7]);
+  // Small upper tail bar
+  addMesh(new THREE.BoxGeometry(0.04, 0.06, 0.32), tailMat, [-2.02, 0.95, 0.55]);
+  addMesh(new THREE.BoxGeometry(0.04, 0.06, 0.32), tailMat, [-2.02, 0.95, -0.55]);
+
+  // Side chrome belt-line trim
+  addMesh(new THREE.BoxGeometry(3.85, 0.035, 0.02), chromeMat, [0, 0.5, 0.82]);
+  addMesh(new THREE.BoxGeometry(3.85, 0.035, 0.02), chromeMat, [0, 0.5, -0.82]);
+  // Window chrome surround (top)
+  addMesh(new THREE.BoxGeometry(2.55, 0.025, 0.02), chromeMat, [-0.1, 1.36, 0.77]);
+  addMesh(new THREE.BoxGeometry(2.55, 0.025, 0.02), chromeMat, [-0.1, 1.36, -0.77]);
+
+  // Roof rails (XT6 has subtle chrome rails)
+  const railMat = new THREE.MeshStandardMaterial({ color: chromeColor, metalness: 0.95, roughness: 0.25 });
+  addMesh(new THREE.BoxGeometry(2.5, 0.04, 0.05), railMat, [-0.1, 1.39, 0.72]);
+  addMesh(new THREE.BoxGeometry(2.5, 0.04, 0.05), railMat, [-0.1, 1.39, -0.72]);
+
+  // ---- Wheels — XT6 20" alloys
   const wheelPositions = [
-    [1.35, 0.35, 0.85], [1.35, 0.35, -0.85], [-1.35, 0.35, 0.85], [-1.35, 0.35, -0.85],
+    [1.32, 0.32, 0.84], [1.32, 0.32, -0.84], [-1.32, 0.32, 0.84], [-1.32, 0.32, -0.84],
   ];
   wheelPositions.forEach((p) => {
     const wheelGroup = new THREE.Group();
     wheelGroup.position.set(...p);
     const tire = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.42, 0.42, 0.28, 28),
+      new THREE.CylinderGeometry(0.4, 0.4, 0.26, 28),
       new THREE.MeshStandardMaterial({ color: 0x0a0b0e, metalness: 0.4, roughness: 0.7 })
     );
     tire.rotation.x = Math.PI / 2;
     tire.castShadow = true;
     const rim = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.26, 0.26, 0.3, 24),
+      new THREE.CylinderGeometry(0.27, 0.27, 0.28, 28),
       new THREE.MeshStandardMaterial({ color: chromeColor, metalness: 1, roughness: 0.18 })
     );
     rim.rotation.x = Math.PI / 2;
+    // 5-spoke detail
+    for (let s = 0; s < 5; s++) {
+      const spoke = new THREE.Mesh(
+        new THREE.BoxGeometry(0.02, 0.32, 0.04),
+        new THREE.MeshStandardMaterial({ color: 0x1a1f28, metalness: 0.8, roughness: 0.4 })
+      );
+      spoke.rotation.x = Math.PI / 2;
+      spoke.rotation.y = (s / 5) * Math.PI * 2;
+      wheelGroup.add(spoke);
+    }
     const hub = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.08, 0.08, 0.32, 16),
+      new THREE.CylinderGeometry(0.08, 0.08, 0.3, 16),
       new THREE.MeshStandardMaterial({ color: bronze, metalness: 1, roughness: 0.2 })
     );
     hub.rotation.x = Math.PI / 2;
@@ -112,7 +164,7 @@ const buildLuxurySUV = () => {
     car.add(wheelGroup);
   });
 
-  car.position.y = -0.55;
+  car.position.y = -0.45;
   car.scale.setScalar(1.05);
   return car;
 };
@@ -309,15 +361,16 @@ export const HeroCadillac3D = () => {
       <div className="relative max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center min-h-[80vh]">
         {/* Editorial copy */}
         <div className="lg:col-span-5 z-10">
-          <div className="lux-kicker">Bay Area · Private Chauffeur</div>
+          <div className="lux-kicker">Bay Area · Private Chauffeur · Cadillac XT6</div>
           <h1 className="font-serif mt-4 text-4xl sm:text-5xl lg:text-[68px] leading-[1.02] tracking-[-0.02em] text-[#E7EBF2] animate-fade-up">
-            Cadillac luxury. <br />
+            The Cadillac XT6. <br />
             <span className="italic text-[#B08D57]">Quiet precision.</span> <br />
             On your schedule.
           </h1>
           <p className="mt-6 text-[15px] sm:text-base text-[#C9D0DB] max-w-xl leading-relaxed animate-fade-up-delay">
-            SFO · OAK · SJC airports. Napa & Sonoma wine country. Corporate roadshows,
-            executive transfers and white-glove events — with the discretion of a private driver.
+            A blacked-out 2024 Cadillac XT6 Premium Luxury — three rows, Super Cruise, AKG Studio audio.
+            SFO · OAK · SJC airports, Napa & Sonoma wine country, executive transfers and white-glove
+            events — with the discretion of a private driver.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link

@@ -3,22 +3,22 @@ import { Users, Briefcase, Wifi, Shield } from "lucide-react";
 
 const FLEET = [
   {
-    key: "escalade",
-    name: "Cadillac Escalade",
-    tag: "Flagship SUV",
+    key: "xt6",
+    name: "Cadillac XT6",
+    tag: "Flagship 3-Row Crossover",
     seats: "6 passengers · 6 bags",
-    desc: "Captain's chairs, panoramic moonroof, rear entertainment, climate-zoned cabin.",
+    desc: "Blacked-out 2024 XT6 Premium Luxury. Three-row crossover with Super Cruise, AKG Studio 14-speaker audio, and panoramic moonroof.",
     img: "https://images.unsplash.com/photo-1632239524459-5c3137fcdae9?auto=format&fit=crop&w=1400&q=85",
-    perks: ["Wi-Fi hotspot", "Privacy glass", "Bottled water & mints", "Phone chargers"],
+    perks: ["Wi-Fi hotspot", "Privacy glass", "Heated & ventilated seats", "Quad-zone climate"],
   },
   {
-    key: "ct6",
-    name: "Cadillac CT6",
-    tag: "Executive Sedan",
-    seats: "3 passengers · 3 bags",
-    desc: "Full-size luxury sedan with massage seats, Bose Panaray, ultraview sunroof.",
+    key: "xt6-platinum",
+    name: "Cadillac XT6 Platinum",
+    tag: "Executive Edition",
+    seats: "6 passengers · 6 bags",
+    desc: "Top-trim XT6 Platinum with semi-aniline leather captain's chairs, massage seats, Super Cruise hands-free driving, and night-vision package.",
     img: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=1400&q=85",
-    perks: ["Wi-Fi hotspot", "Massage seats", "Bose Panaray audio", "Tinted windows"],
+    perks: ["Wi-Fi hotspot", "Massage seats", "Super Cruise", "Night-vision package"],
   },
 ];
 
@@ -29,10 +29,10 @@ export const FleetCards = () => {
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="lux-kicker">The Fleet</div>
           <h2 className="font-serif text-3xl sm:text-5xl mt-2 text-[#E7EBF2]">
-            Two cabins. <span className="italic text-[#B08D57]">Zero compromise.</span>
+            Two trims. <span className="italic text-[#B08D57]">One signature.</span>
           </h2>
           <p className="mt-4 text-[#C9D0DB]">
-            Both vehicles are detailed daily and maintained to factory spec.
+            Both Cadillac XT6 builds are detailed daily and maintained to factory spec.
           </p>
         </div>
 

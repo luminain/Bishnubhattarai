@@ -14,8 +14,8 @@ const SERVICES = [
 ];
 
 const VEHICLES = [
-  { key: "escalade", name: "Cadillac Escalade", desc: "Up to 6 pax · 6 bags" },
-  { key: "ct6",      name: "Cadillac CT6",      desc: "Up to 3 pax · 3 bags" },
+  { key: "xt6",          name: "Cadillac XT6",          desc: "Up to 6 pax · 6 bags · 3-row crossover" },
+  { key: "xt6-platinum", name: "Cadillac XT6 Platinum", desc: "Top trim · massage · Super Cruise" },
 ];
 
 const CHIP_LIST = [
@@ -29,12 +29,12 @@ const STEP_TITLES = ["Service", "Vehicle", "Where", "When", "Details", "Review"]
 
 const BookingStepper = () => {
   const [params] = useSearchParams();
-  const initialVehicle = (params.get("vehicle") || "").toLowerCase().includes("ct6") ? "ct6" : "escalade";
+  const initialVehicle = (params.get("vehicle") || "").toLowerCase().includes("platinum") ? "xt6-platinum" : "xt6";
 
   const [step, setStep] = useState(0);
   const [data, setData] = useState({
     service_type: "airport",
-    vehicle: initialVehicle === "ct6" ? "Cadillac CT6" : "Cadillac Escalade",
+    vehicle: initialVehicle === "xt6-platinum" ? "Cadillac XT6 Platinum" : "Cadillac XT6",
     pickup: "SFO Airport",
     dropoff: "Downtown San Francisco",
     date: new Date(Date.now() + 86400000).toISOString().slice(0, 10),
