@@ -5,19 +5,19 @@
   },
   {
     "content": "Phase 2: Get luxury design guidelines from design_agent",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Install 3D + animation libraries (R3F, drei, GSAP)",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "Phase 2: Build backend (bookings, pricing, admin auth, stats)",
-    "status": "pending"
+    "status": "in_progress"
   },
   {
     "content": "Phase 2: Build frontend (3D Hero, Booking Wizard, Services, Fleet, Testimonials, Admin)",
-    "status": "pending"
+    "status": "in_progress"
   },
   {
     "content": "Phase 2: Verify 3D hero renders + take screenshots",

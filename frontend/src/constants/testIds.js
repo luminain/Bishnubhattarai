@@ -1,0 +1,47 @@
+export const HOME = {
+  emergentLink: "home-emergent-link",
+  heroBookBtn: "hero-book-now-button",
+  heroConciergeBtn: "hero-concierge-button",
+  navBook: "nav-book-button",
+  navConcierge: "nav-concierge-button",
+  navMobileToggle: "nav-mobile-toggle",
+};
+
+export const BOOK = {
+  serviceOption: (s) => `booking-service-option-${s}`,
+  pickupInput: "booking-pickup-input",
+  dropoffInput: "booking-dropoff-input",
+  pickupChip: (c) => `booking-pickup-chip-${c}`,
+  dropoffChip: (c) => `booking-dropoff-chip-${c}`,
+  dateInput: "booking-date-input",
+  timeInput: "booking-time-input",
+  flightInput: "booking-flight-number-input",
+  passengersSelect: "booking-passengers-select",
+  luggageSelect: "booking-luggage-select",
+  hoursSelect: "booking-hours-select",
+  notesInput: "booking-notes-textarea",
+  nameInput: "booking-name-input",
+  emailInput: "booking-email-input",
+  phoneInput: "booking-phone-input",
+  vehicleOption: (v) => `booking-vehicle-option-${v}`,
+  nextBtn: "booking-next-step-button",
+  backBtn: "booking-back-step-button",
+  confirmBtn: "booking-confirm-button",
+  rateCard: "rate-breakdown-card",
+  rateTotal: "rate-total-amount",
+  confirmationCode: "booking-confirmation-code",
+};
+
+export const ADMIN = {
+  emailInput: "admin-email-input",
+  passwordInput: "admin-password-input",
+  loginBtn: "admin-login-button",
+  bookingsTable: "admin-bookings-table",
+  statusSelect: (id) => `admin-status-select-${id}`,
+  revenueKpi: "admin-revenue-kpi",
+  bookingsKpi: "admin-bookings-kpi",
+  avgFareKpi: "admin-avg-fare-kpi",
+  upcomingKpi: "admin-upcoming-kpi",
+  revenueChart: "admin-revenue-chart",
+  logoutBtn: "admin-logout-button",
+};
