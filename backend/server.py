@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException, Depends, status
+from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -297,6 +298,25 @@ async def seed_admin():
 @api.get("/")
 async def root():
     return {"name": "Bishnu Bhattarai Private Chauffeur API", "status": "ok"}
+
+
+@api.get("/static/cadillac_xt6.glb")
+async def xt6_glb():
+    # Prefer compressed version (3.7MB meshopt) if present
+    base = ROOT_DIR / "static"
+    path = base / "cadillac_xt6_min.glb"
+    if not path.exists():
+        path = base / "cadillac_xt6.glb"
+    if not path.exists():
+        raise HTTPException(404, "Model not found")
+    return FileResponse(
+        path,
+        media_type="model/gltf-binary",
+        headers={
+            "Cache-Control": "public, max-age=31536000, immutable",
+            "Access-Control-Allow-Origin": "*",
+        },
+    )
 
 
 @api.get("/health")

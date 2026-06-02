@@ -3,30 +3,64 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Enable Three.js loader cache so StrictMode double-mount reuses the GLB fetch
 THREE.Cache.enabled = true;
 
-// Module-level cached promise — fetches once, parses once
+// XT6 model — served via backend /api/static (bypasses dev-server fetch interception)
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
+const XT6_URL = `${BACKEND_URL}/api/static/cadillac_xt6.glb`;
+
+// Module-level cached promise — uses XMLHttpRequest to bypass the emergent-main.js
+// fetch wrapper which interferes with large binary streaming.
 let _xt6GLBPromise = null;
 const loadXT6 = () => {
   if (_xt6GLBPromise) return _xt6GLBPromise;
-  _xt6GLBPromise = (async () => {
+  _xt6GLBPromise = new Promise((resolve, reject) => {
     // eslint-disable-next-line no-console
-    console.log("[XT6] fetch start");
-    const resp = await fetch("/models/cadillac_xt6.glb", { cache: "force-cache" });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const buf = await resp.arrayBuffer();
-    // eslint-disable-next-line no-console
-    console.log(`[XT6] fetched ${(buf.byteLength / 1048576).toFixed(2)} MB, parsing...`);
-    const loader = new GLTFLoader();
-    return await new Promise((resolve, reject) => {
-      loader.parse(buf, "", (gltf) => resolve(gltf), (err) => reject(err));
-    });
-  })().catch((err) => {
-    _xt6GLBPromise = null; // allow retry on next mount
+    console.log("[XT6] XHR start", XT6_URL);
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", XT6_URL, true);
+    xhr.responseType = "arraybuffer";
+    xhr.onprogress = (e) => {
+      if (e.lengthComputable) {
+        // eslint-disable-next-line no-console
+        console.log(`[XT6] ${((e.loaded / e.total) * 100).toFixed(0)}%`);
+      }
+    };
+    xhr.onreadystatechange = () => {
+      // eslint-disable-next-line no-console
+      console.log(`[XT6] readyState=${xhr.readyState} status=${xhr.status}`);
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const buf = xhr.response;
+        // eslint-disable-next-line no-console
+        console.log(`[XT6] received ${(buf.byteLength / 1048576).toFixed(2)} MB, parsing...`);
+        const loader = new GLTFLoader();
+        loader.setMeshoptDecoder(MeshoptDecoder);
+        loader.parse(buf, "", (gltf) => {
+          // eslint-disable-next-line no-console
+          console.log("[XT6] parsed OK");
+          resolve(gltf);
+        }, (err) => {
+          // eslint-disable-next-line no-console
+          console.warn("[XT6] parse failed", err);
+          reject(err);
+        });
+      } else {
+        reject(new Error(`HTTP ${xhr.status}`));
+      }
+    };
+    xhr.onerror = (e) => reject(new Error("XHR network error"));
+    xhr.ontimeout = () => reject(new Error("XHR timeout"));
+    xhr.timeout = 60000;
+    xhr.send();
+  }).catch((err) => {
+    _xt6GLBPromise = null; // allow retry
     throw err;
   });
   return _xt6GLBPromise;
@@ -349,7 +383,18 @@ export const HeroCadillac3D = () => {
         const box3 = new THREE.Box3().setFromObject(model);
         model.position.y -= box3.min.y;
 
-        // Improve materials: enable shadows + boost env reflectivity
+        // Improve materials: enable shadows, boost env reflectivity, recolor body to black
+        const BODY_BLACK = new THREE.Color(0x06070a);   // Stellar Black Metallic
+        const isLikelyBody = (m, mesh) => {
+          // Heuristic: large mesh + light/white material = body paint
+          if (!m || !m.color) return false;
+          const c = m.color;
+          const lum = 0.299 * c.r + 0.587 * c.g + 0.114 * c.b;
+          // Skip glass/transparent, skip pure metallic chrome (very high metalness, low roughness)
+          if (m.transparent || (m.opacity !== undefined && m.opacity < 0.9)) return false;
+          // Body paint is typically light colored, mid-high metalness
+          return lum > 0.45;
+        };
         model.traverse((obj) => {
           if (obj.isMesh) {
             obj.castShadow = true;
@@ -357,6 +402,13 @@ export const HeroCadillac3D = () => {
             const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
             mats.forEach((m) => {
               if (!m) return;
+              if (isLikelyBody(m, obj)) {
+                m.color = BODY_BLACK.clone();
+                if ("metalness" in m) m.metalness = 0.95;
+                if ("roughness" in m) m.roughness = 0.28;
+                if ("clearcoat" in m) m.clearcoat = 1.0;
+                if ("clearcoatRoughness" in m) m.clearcoatRoughness = 0.1;
+              }
               if ("envMapIntensity" in m) m.envMapIntensity = 1.4;
               if (m.metalness !== undefined && m.metalness > 0.5) m.envMapIntensity = 1.7;
               m.needsUpdate = true;
@@ -366,6 +418,7 @@ export const HeroCadillac3D = () => {
 
         // Swap in real model
         car.add(model);
+        window.__XT6_DONE = true;
         console.log("[XT6] GLB loaded, swapped in. Scale=", scale.toFixed(3));
         gsap.to(fallback.scale, {
           x: 0.001, y: 0.001, z: 0.001, duration: 0.4, ease: "power2.out",
