@@ -2,8 +2,35 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Enable Three.js loader cache so StrictMode double-mount reuses the GLB fetch
+THREE.Cache.enabled = true;
+
+// Module-level cached promise — fetches once, parses once
+let _xt6GLBPromise = null;
+const loadXT6 = () => {
+  if (_xt6GLBPromise) return _xt6GLBPromise;
+  _xt6GLBPromise = (async () => {
+    // eslint-disable-next-line no-console
+    console.log("[XT6] fetch start");
+    const resp = await fetch("/models/cadillac_xt6.glb", { cache: "force-cache" });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const buf = await resp.arrayBuffer();
+    // eslint-disable-next-line no-console
+    console.log(`[XT6] fetched ${(buf.byteLength / 1048576).toFixed(2)} MB, parsing...`);
+    const loader = new GLTFLoader();
+    return await new Promise((resolve, reject) => {
+      loader.parse(buf, "", (gltf) => resolve(gltf), (err) => reject(err));
+    });
+  })().catch((err) => {
+    _xt6GLBPromise = null; // allow retry on next mount
+    throw err;
+  });
+  return _xt6GLBPromise;
+};
 import { Link } from "react-router-dom";
 import { ArrowRight, Phone, Sparkles, Wifi, EyeOff } from "lucide-react";
 import { HOME } from "@/constants/testIds";
@@ -286,10 +313,80 @@ export const HeroCadillac3D = () => {
     // Soft fade circle around car using transparent gradient sprite
     // (skipped to keep it simple)
 
-    // Car
-    const car = buildLuxurySUV();
+    // Car — start with procedural fallback (shown instantly while GLB loads)
+    const car = new THREE.Group();
+    const fallback = buildLuxurySUV();
+    fallback.name = "fallback";
+    car.add(fallback);
+    car.position.y = 0;
     scene.add(car);
     carRef.current = car;
+
+    // Load real Cadillac XT6 GLB (delayed to ensure page is stable, then module-cached)
+    let cancelled = false;
+    const loadTimer = setTimeout(() => {
+      if (cancelled) return;
+      console.log("[XT6] Requesting model ...");
+      loadXT6()
+        .then((gltf) => {
+          if (cancelled) return;
+          // Clone scene so multiple instances (StrictMode) don't share the same node tree
+          const model = gltf.scene.clone(true);
+        // Normalize: compute bounding box and center + scale to ~4.4 units long
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const targetLength = 4.4;
+        const scale = targetLength / maxDim;
+        model.scale.setScalar(scale);
+        // Re-center after scaling
+        const box2 = new THREE.Box3().setFromObject(model);
+        const c2 = new THREE.Vector3();
+        box2.getCenter(c2);
+        model.position.sub(c2);
+        // Sit on ground (y=0 plane)
+        const box3 = new THREE.Box3().setFromObject(model);
+        model.position.y -= box3.min.y;
+
+        // Improve materials: enable shadows + boost env reflectivity
+        model.traverse((obj) => {
+          if (obj.isMesh) {
+            obj.castShadow = true;
+            obj.receiveShadow = true;
+            const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+            mats.forEach((m) => {
+              if (!m) return;
+              if ("envMapIntensity" in m) m.envMapIntensity = 1.4;
+              if (m.metalness !== undefined && m.metalness > 0.5) m.envMapIntensity = 1.7;
+              m.needsUpdate = true;
+            });
+          }
+        });
+
+        // Swap in real model
+        car.add(model);
+        console.log("[XT6] GLB loaded, swapped in. Scale=", scale.toFixed(3));
+        gsap.to(fallback.scale, {
+          x: 0.001, y: 0.001, z: 0.001, duration: 0.4, ease: "power2.out",
+          onComplete: () => {
+            car.remove(fallback);
+            fallback.traverse((o) => {
+              if (o.geometry) o.geometry.dispose?.();
+              if (o.material) {
+                const ms = Array.isArray(o.material) ? o.material : [o.material];
+                ms.forEach((m) => m.dispose?.());
+              }
+            });
+          },
+        });
+          model.scale.multiplyScalar(0.001);
+          gsap.to(model.scale, { x: scale, y: scale, z: scale, duration: 0.8, ease: "power3.out" });
+        })
+        .catch((err) => {
+          console.warn("[XT6] GLB failed to load — keeping fallback model.", err?.message || err);
+        });
+    }, 800);
 
     // Render loop
     let raf;
@@ -338,6 +435,8 @@ export const HeroCadillac3D = () => {
     }, heroRef);
 
     return () => {
+      cancelled = true;
+      clearTimeout(loadTimer);
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
       ctx.revert();
