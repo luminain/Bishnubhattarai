@@ -10,9 +10,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 // Enable Three.js loader cache so StrictMode double-mount reuses the GLB fetch
 THREE.Cache.enabled = true;
 
-// XT6 model — served via backend /api/static (bypasses dev-server fetch interception)
+// XT6 model: use the backend when explicitly configured, otherwise use the
+// static asset that Cloudflare Pages deploys with the frontend.
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
-const XT6_URL = `${BACKEND_URL}/api/static/cadillac_xt6.glb`;
+const XT6_URL = BACKEND_URL
+  ? `${BACKEND_URL}/api/static/cadillac_xt6.glb`
+  : "/models/cadillac_xt6.glb";
 
 // Module-level cached promise — uses XMLHttpRequest to bypass the emergent-main.js
 // fetch wrapper which interferes with large binary streaming.

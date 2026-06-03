@@ -68,6 +68,8 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
+    "build:cloudflare": "CI=false npm run build",
+    "deploy:cloudflare": "npm run build:cloudflare && npx wrangler pages deploy build",
     "test": "craco test"
   },
   "browserslist": {
@@ -106,7 +108,6 @@
     },
     "fork-ts-checker-webpack-plugin": {
       "ajv": "^6.12.6"
-    },
-    "ajv": "^8.0.0"
+    }
   }
 }
