@@ -98,5 +98,15 @@
     "globals": "15.15.0",
     "postcss": "8.4.49",
     "tailwindcss": "3.4.17"
+  },
+  "overrides": {
+    "react-day-picker": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    },
+    "fork-ts-checker-webpack-plugin": {
+      "ajv": "^6.12.6"
+    },
+    "ajv": "^8.0.0"
   }
 }
