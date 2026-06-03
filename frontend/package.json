@@ -103,6 +103,7 @@
     "react-day-picker": {
       "react": "$react",
       "react-dom": "$react-dom"
-    }
+    },
+    "ajv": "^8.0.0"
   }
 }
