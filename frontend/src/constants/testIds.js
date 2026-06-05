@@ -1,5 +1,4 @@
 export const HOME = {
-  emergentLink: "home-emergent-link",
   heroBookBtn: "hero-book-now-button",
   heroConciergeBtn: "hero-concierge-button",
   navBook: "nav-book-button",
